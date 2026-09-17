@@ -1,6 +1,6 @@
 name = "UM永不妥协UMSS奇遇控制"
 author = "codex"
-version = "1.1.2"
+version = "1.1.3"
 forumthread = ""
 api_version = 10
 dst_compatible = true
@@ -15,7 +15,7 @@ description = [[服务器端补丁，用来控制永不妥协 UM 自己的 UMSS 
 
 这些代码来自永不妥协 scripts/umss_tables.lua，控制台 c_um_umss("代码") 也是按这里的 name 查找。UMSS 不是原版世界设置里的 boons；把原版“奇遇”设为 never 不能阻止这些 UMSS setpiece。
 
-配置里可以一键拦截全部 UMSS，也可以逐项选择。默认只拦截 moonFrag，其他保持允许。]]
+配置里可以一键拦截全部 UMSS，也可以逐项选择。默认只拦截 moonFrag，其他保持允许。被拦截的 UMSS 会走空生成流程，避免破坏永不妥协自己的生成/保存链。]]
 
 configuration_options =
 {
