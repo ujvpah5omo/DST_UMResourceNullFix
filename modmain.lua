@@ -43,6 +43,32 @@ local function ShouldForceUMSS(name)
     return GetUMSSState(name) == "force"
 end
 
+local function HasSpawnedUMSS(name)
+    if GLOBAL.TheWorld == nil or type(GLOBAL.TheWorld.umsetpieces) ~= "table" then
+        return false
+    end
+
+    for _, spawned_name in ipairs(GLOBAL.TheWorld.umsetpieces) do
+        if spawned_name == name then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function ClearUMSSDefinition(inst, name)
+    inst.spawnTable = {}
+    inst.rotatable = false
+    inst.tile_centered = false
+    inst.spawninwater_tiles = false
+    inst.spawninwater_prefabs = false
+    inst.SpawnFn = nil
+    inst.umss_tags = nil
+    inst.umss_blocked_by_controller = name
+    return true
+end
+
 local FORCE_WEIGHT = 100000
 
 local FORCE_TABLES = {
@@ -116,39 +142,44 @@ local function AddForcedChoice(weighted_table, name)
     end
 end
 
+local function GetForcedChoices(...)
+    local forced = {}
+
+    for i = 1, select("#", ...) do
+        local names = select(i, ...)
+        for _, name in ipairs(names) do
+            if ShouldForceUMSS(name) and not HasSpawnedUMSS(name) then
+                AddForcedChoice(forced, name)
+            end
+        end
+    end
+
+    return next(forced) ~= nil and forced or nil
+end
+
+local function ReplaceIfForced(inst, table_name, forced)
+    if forced ~= nil then
+        inst[table_name] = forced
+    end
+end
+
 local function ApplyForcedUMSS(inst)
-    for _, name in ipairs(FORCE_TABLES.LAND) do
-        if ShouldForceUMSS(name) then
-            AddForcedChoice(inst.DecidTable, name)
-            AddForcedChoice(inst.WixieTable, name)
-            AddForcedChoice(inst.DesertTable, name)
-            AddForcedChoice(inst.MarshTable, name)
-            AddForcedChoice(inst.HoodedTable, name)
-            AddForcedChoice(inst.DarkForestTable, name)
-            AddForcedChoice(inst.RockyTable, name)
-            AddForcedChoice(inst.SavannaTable, name)
-            AddForcedChoice(inst.MosaicTable, name)
-            AddForcedChoice(inst.GeneralTable, name)
-        end
-    end
+    local forced_land = GetForcedChoices(FORCE_TABLES.LAND)
+    ReplaceIfForced(inst, "DecidTable", forced_land)
+    ReplaceIfForced(inst, "WixieTable", forced_land)
+    ReplaceIfForced(inst, "DesertTable", forced_land)
+    ReplaceIfForced(inst, "MarshTable", forced_land)
+    ReplaceIfForced(inst, "HoodedTable", forced_land)
+    ReplaceIfForced(inst, "DarkForestTable", forced_land)
+    ReplaceIfForced(inst, "RockyTable", forced_land)
+    ReplaceIfForced(inst, "SavannaTable", forced_land)
+    ReplaceIfForced(inst, "MosaicTable", forced_land)
+    ReplaceIfForced(inst, "GeneralTable", forced_land)
 
-    for _, name in ipairs(FORCE_TABLES.OCEAN) do
-        if ShouldForceUMSS(name) then
-            AddForcedChoice(inst.OceanTable, name)
-        end
-    end
+    ReplaceIfForced(inst, "OceanTable", GetForcedChoices(FORCE_TABLES.OCEAN))
 
-    for _, name in ipairs(FORCE_TABLES.CAVE) do
-        if ShouldForceUMSS(name) then
-            AddForcedChoice(inst.GeneralTable, name)
-        end
-    end
-
-    for _, name in ipairs(FORCE_TABLES.SPECIAL) do
-        if ShouldForceUMSS(name) then
-            AddForcedChoice(inst.GeneralTable, name)
-        end
-    end
+    local forced_general = GetForcedChoices(FORCE_TABLES.CAVE, FORCE_TABLES.SPECIAL)
+    ReplaceIfForced(inst, "GeneralTable", forced_general)
 end
 
 AddPrefabPostInit("umss_general", function(inst)
@@ -163,15 +194,11 @@ AddPrefabPostInit("umss_general", function(inst)
 
     function inst:DefineTable(name, ...)
         if ShouldBlockUMSS(name) then
-            self.spawnTable = {}
-            self.rotatable = false
-            self.tile_centered = false
-            self.spawninwater_tiles = false
-            self.spawninwater_prefabs = false
-            self.SpawnFn = nil
-            self.umss_tags = nil
-            self.umss_blocked_by_controller = name
-            return true
+            return ClearUMSSDefinition(self, name)
+        end
+
+        if ShouldForceUMSS(name) and HasSpawnedUMSS(name) then
+            return ClearUMSSDefinition(self, name)
         end
 
         return old_define_table(self, name, ...)
