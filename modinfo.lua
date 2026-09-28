@@ -6,7 +6,7 @@ end
 
 name = T("UM Resource Null Fix", "永不妥协无资源设定彩蛋修正补丁")
 author = "Codex"
-version = "1.2.5"
+version = "1.2.6"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3803245200"
 
 api_version = 10
@@ -27,8 +27,8 @@ server_filter_tags = {
     "永不妥协",
     "奇遇",
 }
-icon_atlas = ""
-icon = ""
+icon_atlas = "modicon.xml"
+icon = "modicon.tex"
 
 description = T([[
 Server-side patch for controlling UMSS encounters from Uncompromising Mode.
