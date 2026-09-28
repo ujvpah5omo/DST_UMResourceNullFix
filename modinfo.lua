@@ -6,7 +6,7 @@ end
 
 name = T("UM Resource Null Fix", "永不妥协无资源设定彩蛋修正补丁")
 author = "Codex"
-version = "1.2.4"
+version = "1.2.5"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3803245200"
 
 api_version = 10
