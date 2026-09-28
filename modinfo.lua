@@ -6,7 +6,7 @@ end
 
 name = T("UM Resource Null Fix", "永不妥协无资源设定彩蛋修正补丁")
 author = "Codex"
-version = "1.2.3"
+version = "1.2.4"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3803245200"
 
 api_version = 10
@@ -606,7 +606,8 @@ local UMSS_CONFIGS =
     },
 }
 
-for _, item in ipairs(UMSS_CONFIGS) do
+for i = 1, #UMSS_CONFIGS do
+    local item = UMSS_CONFIGS[i]
     configuration_options[#configuration_options + 1] =
     {
         name = "block_umss_" .. item.safe_key,
